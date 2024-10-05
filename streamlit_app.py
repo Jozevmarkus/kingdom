@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from sklearn.ensamble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier
 st.title('❤ Mahmudov Mahmudjon')
 
 st.write('Hello world!')
@@ -103,7 +103,6 @@ st.dataframe(df_prediction_proba,
                  max_value=1
                ),
              }, hide_index=True)
-
 
 penguins_species = np.array(['Adelie', 'Chinstrap', 'Gentoo'])
 st.success(str(penguins_species[prediction][0]))
