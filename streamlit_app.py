@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from sklearn.ensamble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier
 st.title('😘 Mahmudov Mahmudjon')
 
 st.write('Hello world!')
