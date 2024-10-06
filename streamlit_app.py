@@ -7,7 +7,7 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.metrics import r2_score, mean_absolute_percentage_error
 
-# Заголовок
+# Заголовок приложения
 st.title('Анализ качества вина с использованием машинного обучения')
 
 # Загрузка данных
@@ -15,28 +15,32 @@ uploaded_file = st.file_uploader("Загрузите CSV файл с данны�
 
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
+    st.write("Просмотр данных:")
     st.write(data)
 
-    # Гистограмма для целевой переменной 'quality' с использованием matplotlib
-    plt.figure(figsize=(8, 6))
-    plt.hist(data['quality'], bins=10, color='purple', edgecolor='black')
-    plt.title('Распределение качества вина')
-    plt.xlabel('Качество')
-    plt.ylabel('Частота')
-    st.pyplot(plt.gcf())  # Отображение графика через Streamlit
+    # Гистограмма для целевой переменной 'quality'
+    st.write("Распределение качества вина:")
+    fig, ax = plt.subplots()
+    ax.hist(data['quality'], bins=10, color='purple', edgecolor='black')
+    ax.set_title('Распределение качества вина')
+    ax.set_xlabel('Качество')
+    ax.set_ylabel('Частота')
+    st.pyplot(fig)
 
     # Корреляционная матрица для всех признаков
-    plt.figure(figsize=(10, 8))
-    plt.matshow(data.corr(), cmap='viridis', fignum=1)
-    plt.colorbar()
-    plt.title('Корреляционная матрица признаков', pad=40)
-    st.pyplot(plt.gcf())  # Отображение графика через Streamlit
+    st.write("Корреляционная матрица признаков:")
+    fig, ax = plt.subplots(figsize=(10, 8))
+    cax = ax.matshow(data.corr(), cmap='viridis')
+    fig.colorbar(cax)
+    plt.xticks(range(len(data.columns)), data.columns, rotation=90)
+    plt.yticks(range(len(data.columns)), data.columns)
+    st.pyplot(fig)
 
-    # Разделение на признаки и целевую переменную
+    # Разделение данных на признаки и целевую переменную
     X = data.drop(['quality'], axis=1)
     y = data['quality']
 
-    # Разделение на тренировочную и тестовую выборки
+    # Разделение данных на обучающую и тестовую выборки
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
     # Линейная регрессия
@@ -51,12 +55,13 @@ if uploaded_file is not None:
     st.write(f'Линейная регрессия MAPE: {mape_lr:.2f}')
 
     # График предсказаний линейной регрессии
-    plt.figure(figsize=(8, 6))
-    plt.scatter(y_test, y_pred_lr, color='blue')
-    plt.title('Предсказания vs Настоящие значения (Линейная регрессия)')
-    plt.xlabel('Настоящие значения')
-    plt.ylabel('Предсказанные значения')
-    st.pyplot(plt.gcf())
+    st.write("Предсказания vs Настоящие значения (Линейная регрессия):")
+    fig, ax = plt.subplots()
+    ax.scatter(y_test, y_pred_lr, color='blue')
+    ax.set_title('Предсказания vs Настоящие значения (Линейная регрессия)')
+    ax.set_xlabel('Настоящие значения')
+    ax.set_ylabel('Предсказанные значения')
+    st.pyplot(fig)
 
     # Дерево решений
     model_tree = DecisionTreeRegressor(max_depth=10)
@@ -98,16 +103,19 @@ if uploaded_file is not None:
         'MAPE': [mape_lr, mape_tree, mape_rf, mape_gb]
     })
 
+    st.write("Результаты моделей:")
     st.write(models_results)
 
-    # Итоговое сравнение моделей с визуализацией
-    plt.figure(figsize=(10, 6))
-    plt.bar(models_results['Модель'], models_results['R2'], color=['blue', 'green', 'orange', 'red'])
-    plt.title('Сравнение R2 моделей')
-    st.pyplot(plt.gcf())
+    # График сравнения R2
+    st.write("Сравнение R2 моделей:")
+    fig, ax = plt.subplots()
+    ax.bar(models_results['Модель'], models_results['R2'], color=['blue', 'green', 'orange', 'red'])
+    ax.set_title('Сравнение R2 моделей')
+    st.pyplot(fig)
 
-    plt.figure(figsize=(10, 6))
-    plt.bar(models_results['Модель'], models_results['MAPE'], color=['blue', 'green', 'orange', 'red'])
-    plt.title('Сравнение MAPE моделей')
-    st.pyplot(plt.gcf())
-
+    # График сравнения MAPE
+    st.write("Сравнение MAPE моделей:")
+    fig, ax = plt.subplots()
+    ax.bar(models_results['Модель'], models_results['MAPE'], color=['blue', 'green', 'orange', 'red'])
+    ax.set_title('Сравнение MAPE моделей')
+    st.pyplot(fig)
