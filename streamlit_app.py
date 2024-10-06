@@ -11,7 +11,7 @@ from sklearn.metrics import r2_score, mean_absolute_percentage_error
 st.title('Анализ качества вина с использованием машинного обучения')
 
 # Загрузка данных
-uploaded_file = st.file_uploader("winequality-dataset_updated", type="csv")
+data = pd.read_csv('winequality-dataset_updated.csv')
 
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
