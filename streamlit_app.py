@@ -1,4 +1,5 @@
 # Импорт библиотек
+pip install --upgrade streamlit
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
@@ -6,7 +7,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.metrics import r2_score, mean_absolute_percentage_error
-
+pip install --upgrade streamlit
 # Загрузка данных
 data = pd.read_csv('winequality-dataset_updated.csv')
 
