@@ -152,6 +152,7 @@ st.write("Сравнение R2 моделей:")
 fig, ax = plt.subplots()
 ax.bar(models_results['Модель'], models_results['R2'], color=['blue', 'green', 'orange', 'red', 'purple', 'brown'])
 ax.set_title('Сравнение R2 моделей')
+ax.set_xticklabels(models_results['Модель'], rotation=45, ha='right')  # Поворот текста на оси X
 st.pyplot(fig)
 plt.close(fig)  # Закрытие графика
 
@@ -160,5 +161,6 @@ st.write("Сравнение MAPE моделей:")
 fig, ax = plt.subplots()
 ax.bar(models_results['Модель'], models_results['MAPE'], color=['blue', 'green', 'orange', 'red', 'purple', 'brown'])
 ax.set_title('Сравнение MAPE моделей')
+ax.set_xticklabels(models_results['Модель'], rotation=45, ha='right')  # Поворот текста на оси X
 st.pyplot(fig)
 plt.close(fig)  # Закрытие графика
