@@ -11,6 +11,19 @@ pip install --upgrade streamlit
 # Загрузка данных
 data = pd.read_csv('winequality-dataset_updated.csv')
 
+# Пример правильного рендеринга графика
+import streamlit as st
+import matplotlib.pyplot as plt
+
+st.title("График с правильным обновлением")
+
+# Построение графика
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3], [1, 4, 9])
+
+# Отображение через Streamlit
+st.pyplot(fig)
+
 # Просмотр данных
 print("Первые 5 строк данных:")
 print(data.head())
