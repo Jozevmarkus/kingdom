@@ -6,13 +6,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_percentage_error
-import statsmodels.api as sm
-from random import randint
+from sklearn.metrics import r2_score, mean_absolute_percentage_error
 
-# Для использования моделей CatBoost и XGBoost
-import xgboost as xgb
-from catboost import CatBoostRegressor
+# Попробуем импортировать XGBoost и CatBoost, если они установлены
+try:
+    import xgboost as xgb
+    from catboost import CatBoostRegressor
+    has_boosting = True
+except ImportError:
+    has_boosting = False
 
 # Заголовок приложения
 st.title('Анализ качества вина с использованием машинного обучения')
@@ -25,11 +27,7 @@ if uploaded_file is not None:
     st.write("Просмотр данных:")
     st.write(data)
 
-    # Просмотр информации о данных
-    st.write("Информация о данных:")
-    st.write(data.info())
-
-    # Добавление: гистограмма для целевой переменной 'quality'
+    # Гистограмма для целевой переменной 'quality'
     st.write("Распределение качества вина:")
     fig, ax = plt.subplots()
     ax.hist(data['quality'], bins=10, color='purple', edgecolor='black')
@@ -39,7 +37,7 @@ if uploaded_file is not None:
     st.pyplot(fig)
     plt.close(fig)  # Закрытие графика
 
-    # Добавление: корреляционная матрица для всех признаков
+    # Корреляционная матрица для всех признаков
     st.write("Корреляционная матрица признаков:")
     fig, ax = plt.subplots(figsize=(10, 8))
     cax = ax.matshow(data.corr(), cmap='viridis')
@@ -77,11 +75,6 @@ if uploaded_file is not None:
     st.pyplot(fig)
     plt.close(fig)  # Закрытие графика
 
-    # Модель OLS для статистического анализа
-    X_const = sm.add_constant(X)
-    model_ols = sm.OLS(y, X_const).fit()
-    st.write(model_ols.summary())
-
     # Дерево решений
     model_tree = DecisionTreeRegressor(max_depth=10)
     model_tree.fit(X_train, y_train)
@@ -115,34 +108,44 @@ if uploaded_file is not None:
     st.write(f'Градиентный бустинг R2: {r2_gb:.2f}')
     st.write(f'Градиентный бустинг MAPE: {mape_gb:.2f}')
 
-    # Модель CatBoost
-    model_cat = CatBoostRegressor(verbose=False)
-    model_cat.fit(X_train, y_train)
-    y_pred_cat = model_cat.predict(X_test)
+    # Если XGBoost и CatBoost доступны, использовать их
+    if has_boosting:
+        # Модель CatBoost
+        model_cat = CatBoostRegressor(verbose=False)
+        model_cat.fit(X_train, y_train)
+        y_pred_cat = model_cat.predict(X_test)
 
-    # Оценка CatBoost
-    r2_cat = r2_score(y_test, y_pred_cat)
-    mape_cat = mean_absolute_percentage_error(y_test, y_pred_cat)
-    st.write(f'CatBoost R2: {r2_cat:.2f}')
-    st.write(f'CatBoost MAPE: {mape_cat:.2f}')
+        # Оценка CatBoost
+        r2_cat = r2_score(y_test, y_pred_cat)
+        mape_cat = mean_absolute_percentage_error(y_test, y_pred_cat)
+        st.write(f'CatBoost R2: {r2_cat:.2f}')
+        st.write(f'CatBoost MAPE: {mape_cat:.2f}')
 
-    # Модель XGBoost
-    model_xgb = xgb.XGBRegressor(objective='reg:squarederror', colsample_bytree=0.3, learning_rate=0.1, max_depth=5, n_estimators=100)
-    model_xgb.fit(X_train, y_train)
-    y_pred_xgb = model_xgb.predict(X_test)
+        # Модель XGBoost
+        model_xgb = xgb.XGBRegressor(objective='reg:squarederror', colsample_bytree=0.3, learning_rate=0.1, max_depth=5, n_estimators=100)
+        model_xgb.fit(X_train, y_train)
+        y_pred_xgb = model_xgb.predict(X_test)
 
-    # Оценка XGBoost
-    r2_xgb = r2_score(y_test, y_pred_xgb)
-    mape_xgb = mean_absolute_percentage_error(y_test, y_pred_xgb)
-    st.write(f'XGBoost R2: {r2_xgb:.2f}')
-    st.write(f'XGBoost MAPE: {mape_xgb:.2f}')
+        # Оценка XGBoost
+        r2_xgb = r2_score(y_test, y_pred_xgb)
+        mape_xgb = mean_absolute_percentage_error(y_test, y_pred_xgb)
+        st.write(f'XGBoost R2: {r2_xgb:.2f}')
+        st.write(f'XGBoost MAPE: {mape_xgb:.2f}')
 
     # Сравнение метрик моделей
     models_results = pd.DataFrame({
-        'Модель': ['Линейная регрессия', 'Дерево решений', 'Случайный лес', 'Градиентный бустинг', 'CatBoost', 'XGBoost'],
-        'R2': [r2_lr, r2_tree, r2_rf, r2_gb, r2_cat, r2_xgb],
-        'MAPE': [mape_lr, mape_tree, mape_rf, mape_gb, mape_cat, mape_xgb]
+        'Модель': ['Линейная регрессия', 'Дерево решений', 'Случайный лес', 'Градиентный бустинг'],
+        'R2': [r2_lr, r2_tree, r2_rf, r2_gb],
+        'MAPE': [mape_lr, mape_tree, mape_rf, mape_gb]
     })
+
+    if has_boosting:
+        models_results = models_results.append({
+            'Модель': 'CatBoost', 'R2': r2_cat, 'MAPE': mape_cat
+        }, ignore_index=True)
+        models_results = models_results.append({
+            'Модель': 'XGBoost', 'R2': r2_xgb, 'MAPE': mape_xgb
+        }, ignore_index=True)
 
     st.write("Результаты моделей:")
     st.write(models_results)
