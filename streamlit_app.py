@@ -73,6 +73,7 @@ mape_gb = mean_absolute_percentage_error(y_test, y_pred_gb)
 st.write(f'Градиентный бустинг R2: {r2_gb:.2f}')
 st.write(f'Градиентный бустинг MAPE: {mape_gb:.2f}')
 
+
 if has_boosting:
     model_cat = CatBoostRegressor(verbose=False)
     model_cat.fit(X_train, y_train)
